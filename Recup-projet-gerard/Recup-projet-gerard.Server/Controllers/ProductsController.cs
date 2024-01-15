@@ -15,7 +15,7 @@ namespace BlazorMongoApp.Controller
         [HttpGet]
         public async Task<object> Get()
         {
-            var data = objProducts.GetAllOrders().Result.ToList();
+            var data = objProducts.GetAllProducts().Result.ToList();
             var queryString = Request.Query;
             if (queryString.Keys.Contains("$inlinecount"))
             {
