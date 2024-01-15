@@ -8,6 +8,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="6.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.23.1" />
     <PackageReference Include="MongoDB.Driver.Core" Version="2.23.1" />
+    <PackageReference Include="NRedisStack" Version="0.11.0" />
+    <PackageReference Include="StackExchange.Redis" Version="2.7.10" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Recup-projet-gerard.Client\Recup-projet-gerard.Client.csproj" />
