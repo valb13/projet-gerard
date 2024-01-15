@@ -1,0 +1,45 @@
+﻿@page "/add" 
+@using Gerardr_Projet_NoSql.Models;
+@inject HttpClient http
+@inject IJSRuntime JsRuntime
+<h3>Ajouter un élément</h3>
+
+<DxFormLayout CssClass="w-100">
+    <DxFormLayoutItem Caption="Nom du produit:" ColSpanMd="12">
+        <DxTextBox @bind-Text="@prod.Name" />
+    </DxFormLayoutItem>
+    <DxFormLayoutItem Caption="Prix :" ColSpanMd="12">
+        <DxSpinEdit @bind-Value="@prix" />
+    </DxFormLayoutItem>
+    <DxFormLayoutItem Caption="Description :" ColSpanMd="12">
+        <DxTextBox @bind-Text="@prod.Description" DisplayFormat="C"/>
+    </DxFormLayoutItem>
+    <DxFormLayoutItem>
+        <DxButton RenderStyle="ButtonRenderStyle.Secondary" Click="Post" Text="Ajouter" />
+    </DxFormLayoutItem>
+</DxFormLayout>
+
+
+
+
+@code {
+
+    Products prod = new Products();
+    int prix = 0;
+
+    protected async Task Post() {
+        try{
+            prod.Price = prix.ToString();
+            await http.PostAsJsonAsync("api/products", prod);
+            await JsRuntime.InvokeVoidAsync("alert", "L'élément a bien été ajouté");
+            prod = new Products();
+
+        }catch(Exception e)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", e);
+
+        }
+
+    }
+
+}

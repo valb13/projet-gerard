@@ -1,0 +1,29 @@
+﻿@page "/grid"
+@using Gerardr_Projet_NoSql.Models;
+@inject HttpClient Http
+
+
+@if(prods == null) {
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <DxGrid Data="@prods"
+                CssClass="mw-1100">
+        <Columns>
+            <DxGridDataColumn Caption="Name" FieldName="Name" />
+            <DxGridDataColumn Caption="Prix" FieldName="Price" DisplayFormat="C"/>
+            <DxGridDataColumn Caption="Description" FieldName="Description" />
+        </Columns>
+    </DxGrid>
+}
+
+@code {
+    
+    List<Products> prods = new List<Products>();
+
+    protected override async Task OnInitializedAsync() {
+        prods = await Http.GetFromJsonAsync<List<Products>>("api/products");
+    }
+
+}
