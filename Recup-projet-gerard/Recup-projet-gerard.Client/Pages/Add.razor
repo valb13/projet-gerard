@@ -2,7 +2,7 @@
 @using Gerardr_Projet_NoSql.Models;
 @inject HttpClient http
 @inject IJSRuntime JsRuntime
-<h3>Ajouter un élément</h3>
+<h3>Ajouter un Produit</h3>
 
 <DxFormLayout CssClass="w-100">
     <DxFormLayoutItem Caption="Nom du produit:" ColSpanMd="12">
@@ -14,9 +14,13 @@
     <DxFormLayoutItem Caption="Description :" ColSpanMd="12">
         <DxTextBox @bind-Text="@prod.Description" DisplayFormat="C"/>
     </DxFormLayoutItem>
+    <DxFormLayoutItem Caption="Stock :" ColSpanMd="12">
+        <DxSpinEdit @bind-Value="@stock" />
+    </DxFormLayoutItem>
     <DxFormLayoutItem>
         <DxButton RenderStyle="ButtonRenderStyle.Secondary" Click="Post" Text="Ajouter" />
     </DxFormLayoutItem>
+
 </DxFormLayout>
 
 
@@ -26,10 +30,12 @@
 
     Products prod = new Products();
     int prix = 0;
+    int stock = 0;
 
     protected async Task Post() {
         try{
             prod.Price = prix.ToString();
+            prod.Stock = stock.ToString();
             await http.PostAsJsonAsync("api/products", prod);
             await JsRuntime.InvokeVoidAsync("alert", "L'élément a bien été ajouté");
             prod = new Products();
