@@ -1,4 +1,5 @@
-﻿using Gerardr_Projet_NoSql.Interface;
+﻿using DevExpress.Blazor.Base;
+using Gerardr_Projet_NoSql.Interface;
 using Gerardr_Projet_NoSql.Models;
 using MongoDB.Driver;
 using NRedisStack;
@@ -22,7 +23,7 @@ namespace Gerardr_Projet_NoSql.DataAccessLayer
             mongoClient = new MongoClient("mongodb://localhost:27017/");
             mongoDatabase = mongoClient.GetDatabase("Products");
             prodTable = mongoDatabase.GetCollection<Products>("products");
-            redisClient = ConnectionMultiplexer.Connect("localhost");
+            redisClient = ConnectionMultiplexer.Connect("localhost:10001,abortConnect=false");
             redisDatabase = redisClient.GetDatabase();
 
         }
@@ -81,40 +82,58 @@ namespace Gerardr_Projet_NoSql.DataAccessLayer
             }
         }
 
-        public Products GetProductsRedis(string id)
+        public Products GetProductsRedis(string name)
         {
-            var ft = redisDatabase.FT();  
+            Products prod = new Products();
+            var keys = new HashSet<string>();
 
             try
             {
-                var res = ft.Search("idx:produits", new Query("id")).Documents.Select(x => x["json"]);
-                Console.WriteLine(string.Join("\n", res));
-                return (Products)res;
-            }
-            catch (Exception)
-            {
+                long nextCursor = 0;
+                do
+                {
+                    var redisResult = redisDatabase.Execute("SCAN", nextCursor.ToString(), "MATCH", "*test*", "COUNT", "3");
+                    var innerResult = (RedisResult[])redisResult;
 
-                throw;
+                    nextCursor = long.Parse((string)innerResult[0]);
+
+                    var resultLines = ((string[])innerResult[1]).ToArray();
+                    keys.UnionWith(resultLines);
+                }
+                while (nextCursor != 0);
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        
+
+        var hashFields = redisDatabase.HashGetAll(name);
+            prod.Name = hashFields[0].Value.ToString();
+            prod.Description = hashFields[1].Value.ToString();
+            prod.Price = hashFields[2].Value.ToString();
+            prod.Stock = hashFields[3].Value.ToString();
+
+            return prod;
         }
 
         public void AddProductsRedis(Products prod)
         {
-            var schema = new Schema()
-                .AddTextField(new FieldName("$.name", prod.Name))
-                .AddTextField(new FieldName("$.price", prod.Price))
-                .AddTextField(new FieldName("$.description", prod.Description))
-                .AddTextField(new FieldName("$.stock", prod.Stock));
+            //ajouter un produit à la base redis 
+            var hash = new HashEntry[] {
+            new HashEntry("name", prod.Name),
+            new HashEntry("description", prod.Description),
+            new HashEntry("prix", prod.Price.ToString()),
+            new HashEntry("stock", prod.Stock.ToString()),
+            };
 
-            var ft = redisDatabase.FT();
-
-            ft.Create(
-                "idx:produits",
-                new FTCreateParams().On(IndexDataType.JSON).Prefix("produit:"), schema);
+            redisDatabase.HashSet(prod.Name, hash);
+            redisDatabase.KeyExpire(prod.Name, DateTime.Now.AddHours(1));
             
-            var json = redisDatabase.JSON();
 
-            json.Set("produit:" + prod.Id, "$", prod);
+            var hashFields = redisDatabase.HashGetAll(prod.Name);
+            Console.WriteLine("redis get");
+            Console.WriteLine(String.Join("; ", hashFields));
         }
     }
 }

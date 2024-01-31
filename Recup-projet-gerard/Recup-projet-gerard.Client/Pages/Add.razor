@@ -2,6 +2,7 @@
 @using Gerardr_Projet_NoSql.Models;
 @inject HttpClient http
 @inject IJSRuntime JsRuntime
+
 <h3>Ajouter un Produit</h3>
 
 <DxFormLayout CssClass="w-100">
@@ -29,16 +30,29 @@
 @code {
 
     Products prod = new Products();
+    Products test = new Products();
+
     int prix = 0;
     int stock = 0;
 
     protected async Task Post() {
         try{
-            prod.Price = prix.ToString();
-            prod.Stock = stock.ToString();
-            await http.PostAsJsonAsync("api/products", prod);
-            await JsRuntime.InvokeVoidAsync("alert", "L'élément a bien été ajouté");
-            prod = new Products();
+
+            if(prod.Name == null || prod.Description == null)
+            {
+                await JsRuntime.InvokeVoidAsync("alert", "La saisit est incomplète");
+            }
+            else
+            {
+                prod.Price = prix.ToString();
+                prod.Stock = stock.ToString();
+                await http.PostAsJsonAsync("api/products", prod);
+                await http.PostAsJsonAsync("api/products/cache", prod);
+                await Get();
+                await JsRuntime.InvokeVoidAsync("alert", "L'élément a bien été ajouté");
+                prod = new Products();
+            }
+
 
         }catch(Exception e)
         {
@@ -46,6 +60,12 @@
 
         }
 
+    }
+
+    protected async Task Get()
+    {
+        test = await http.GetFromJsonAsync<Products>($"api/products/cache/{prod.Name}");
+        Console.WriteLine(test);
     }
 
 }

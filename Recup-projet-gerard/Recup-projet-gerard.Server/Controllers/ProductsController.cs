@@ -32,11 +32,32 @@ namespace BlazorMongoApp.Controller
             }
         }
 
+        [HttpGet("cache/{id}")]
+        public async Task<object> GetCache(string id)
+        {
+            try
+            {
+                var data = objProducts.GetProductsRedis(id);
+                return data;
+
+            }catch(Exception e)
+            {
+                return null;
+            }
+        }
+
         [HttpPost]
         public void Post([FromBody] Products prod)
         {
             objProducts.AddOrder(prod);
         }
+
+        [HttpPost("cache")]
+        public void PostRedis([FromBody] Products prod)
+        {
+            objProducts.AddProductsRedis(prod);
+        }
+
         [HttpPut]
         public void Put([FromBody] Products prod)
         {

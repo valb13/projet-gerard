@@ -1,0 +1,13 @@
+﻿.search-main {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: row;
+}
+
+    .search-main input {
+        width: 50%;
+    }
+
+    .search-main svg {
+        margin-right: 15px;
+    }
