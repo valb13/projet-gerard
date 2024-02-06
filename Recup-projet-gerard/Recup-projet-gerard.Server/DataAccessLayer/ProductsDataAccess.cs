@@ -68,7 +68,23 @@ namespace Gerardr_Projet_NoSql.DataAccessLayer
             }
         }
 
-       
+        public async Task<Products> GetProducts(string name)
+        {
+            try
+            {
+                var res = await prodTable.Find(x => x.Name == name).FirstOrDefaultAsync();
+                if(res == null) { return new Products(); }
+                else 
+                    return res;
+            
+            }catch(Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+
         public async void UpdateOrder(Products prod)
         {
             try
@@ -85,36 +101,24 @@ namespace Gerardr_Projet_NoSql.DataAccessLayer
         public Products GetProductsRedis(string name)
         {
             Products prod = new Products();
-            var keys = new HashSet<string>();
+
 
             try
             {
-                long nextCursor = 0;
-                do
-                {
-                    var redisResult = redisDatabase.Execute("SCAN", nextCursor.ToString(), "MATCH", "*test*", "COUNT", "3");
-                    var innerResult = (RedisResult[])redisResult;
+                var hashFields = redisDatabase.HashGetAll(name);
 
-                    nextCursor = long.Parse((string)innerResult[0]);
+                prod.Name = hashFields[0].Value.ToString();
+                prod.Description = hashFields[1].Value.ToString();
+                prod.Price = hashFields[2].Value.ToString();
+                prod.Stock = hashFields[3].Value.ToString();
 
-                    var resultLines = ((string[])innerResult[1]).ToArray();
-                    keys.UnionWith(resultLines);
-                }
-                while (nextCursor != 0);
-            }
-            catch (Exception e)
+                return prod;
+            
+            }catch(Exception e)
             {
-                Console.WriteLine(e);
+                return prod;
             }
-        
-
-        var hashFields = redisDatabase.HashGetAll(name);
-            prod.Name = hashFields[0].Value.ToString();
-            prod.Description = hashFields[1].Value.ToString();
-            prod.Price = hashFields[2].Value.ToString();
-            prod.Stock = hashFields[3].Value.ToString();
-
-            return prod;
+            
         }
 
         public void AddProductsRedis(Products prod)
@@ -135,5 +139,40 @@ namespace Gerardr_Projet_NoSql.DataAccessLayer
             Console.WriteLine("redis get");
             Console.WriteLine(String.Join("; ", hashFields));
         }
+
+        public List<string> GetSacnProductsRedis(string id)
+        {
+            var keys = new HashSet<string>();
+            List<string> keysScan = new List<string>();
+
+            try
+            {
+                long nextCursor = 0;
+                do
+                {
+                    var redisResult = redisDatabase.Execute("SCAN", nextCursor.ToString(), "MATCH", $"*{id}*", "COUNT", "5");
+                    var innerResult = (RedisResult[])redisResult;
+
+                    nextCursor = long.Parse((string)innerResult[0]);
+
+                    var resultLines = ((string[])innerResult[1]).ToArray();
+                    foreach(var line in resultLines)
+                    {
+                        keysScan.Add(line);
+                    }
+                    keys.UnionWith(resultLines);
+                }
+                while (nextCursor != 0);
+
+                return keysScan;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return new List<string>();
+            }
+        }
+
+     
     }
 }

@@ -32,6 +32,37 @@ namespace BlazorMongoApp.Controller
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<object> GetProd(string id)
+        {
+            try
+            {
+                var data = objProducts.GetProducts(id).Result;
+                return data;
+            }catch(Exception e)
+            {
+                Console.WriteLine(e);
+                return null;
+            }
+ 
+        }
+
+
+        [HttpGet("cache/scan/{key}")]
+        public async Task<List<string>> GetScanCache(string key)
+        {
+            try
+            {
+                var scan = objProducts.GetSacnProductsRedis(key);
+                return scan;
+
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+        }
+
         [HttpGet("cache/{id}")]
         public async Task<object> GetCache(string id)
         {
@@ -42,6 +73,7 @@ namespace BlazorMongoApp.Controller
 
             }catch(Exception e)
             {
+                Console.WriteLine(e);
                 return null;
             }
         }
