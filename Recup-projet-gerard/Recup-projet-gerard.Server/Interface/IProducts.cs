@@ -2,6 +2,9 @@
 
 namespace Gerardr_Projet_NoSql.Interface
 {
+    /// <summary>
+    /// Interface pour intéragir avec les produits
+    /// </summary>
     public interface IProducts
     {
         public Task<List<Products>> GetAllProducts();
