@@ -161,26 +161,30 @@
 
     protected async Task Search()
     {
-
-        var resRedis = await http.GetFromJsonAsync<Gerardr_Projet_NoSql.Shared.Models.Products>($"api/products/cache/{search}");
-        if(resRedis.Name == null)
+        if(search != null && search != "")
         {
-            var res = await http.GetFromJsonAsync<Gerardr_Projet_NoSql.Shared.Models.Products>($"api/products/{search}");
-            if (res.Name != null)
+            var resRedis = await http.GetFromJsonAsync<Gerardr_Projet_NoSql.Shared.Models.Products>($"api/products/cache/{search}");
+            if (resRedis.Name == null)
             {
-                prod = res;
-                await http.PostAsJsonAsync("api/products/cache", prod);
+                var res = await http.GetFromJsonAsync<Gerardr_Projet_NoSql.Shared.Models.Products>($"api/products/{search}");
+                if (res.Name != null)
+                {
+                    prod = res;
+                    await http.PostAsJsonAsync("api/products/cache", prod);
+                }
+                else
+                {
+                    prod = null;
+                    noData = "Aucun produit trouvé";
+                }
             }
             else
             {
-                prod = null;
-                noData = "Aucun produit trouvé";
+                prod = resRedis;
             }
-        }else
-        {
-            prod = resRedis;
-        }
 
+        }
+        
         StateHasChanged();
     }
 
