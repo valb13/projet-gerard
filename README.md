@@ -10,7 +10,7 @@ $ docker run -p 10001:6379 -p 13333:8001 redis/redis-stack:latest
 Assurez-vous que le conteneur est en cours d'exécution pour pouvoir utiliser l'application.
 
 Le projet repose sur le framework Blazor ainsi que sur le langage C#. Il adopte une architecture conforme au modèle MVC.
-La partie backend du projet est située dans le répertoire "/Server". À cet emplacement, vous trouverez plusieurs éléments essentiels :
+La partie backend du projet est située dans le répertoire "/Recup-projet-gerard.Server". À cet emplacement, vous trouverez plusieurs éléments essentiels :
 
     Le contrôleur "ProductsController.cs", responsable de la gestion des requêtes HTTP relatives aux produits. Il orchestre les actions nécessaires pour récupérer, créer, mettre à jour ou supprimer des données liées aux produits dans la base de données.
 
