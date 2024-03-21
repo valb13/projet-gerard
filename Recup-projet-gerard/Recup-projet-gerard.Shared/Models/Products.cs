@@ -1,6 +1,6 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
 
-namespace Gerardr_Projet_NoSql.Models
+namespace Gerardr_Projet_NoSql.Shared.Models
 {
     [BsonIgnoreExtraElements]
     public class Products

@@ -1,4 +1,4 @@
-﻿using Gerardr_Projet_NoSql.Models;
+﻿using Gerardr_Projet_NoSql.Shared.Models;
 
 namespace Gerardr_Projet_NoSql.Interface
 {

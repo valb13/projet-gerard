@@ -122,7 +122,7 @@
 @code{
     string search = "";
     List<string> keys = new List<string>();
-    Gerardr_Projet_NoSql.Models.Products? prod = null;
+    Gerardr_Projet_NoSql.Shared.Models.Products? prod = null;
     bool editMode = false;
     string noData = null;
 
@@ -147,7 +147,7 @@
 
     protected async Task SearchRedis(string search) {
 
-        var res  = await http.GetFromJsonAsync<Gerardr_Projet_NoSql.Models.Products>($"api/products/cache/{search}");
+        var res  = await http.GetFromJsonAsync<Gerardr_Projet_NoSql.Shared.Models.Products>($"api/products/cache/{search}");
 
         if(res != null)
         {
@@ -162,10 +162,10 @@
     protected async Task Search()
     {
 
-        var resRedis = await http.GetFromJsonAsync<Gerardr_Projet_NoSql.Models.Products>($"api/products/cache/{search}");
+        var resRedis = await http.GetFromJsonAsync<Gerardr_Projet_NoSql.Shared.Models.Products>($"api/products/cache/{search}");
         if(resRedis.Name == null)
         {
-            var res = await http.GetFromJsonAsync<Gerardr_Projet_NoSql.Models.Products>($"api/products/{search}");
+            var res = await http.GetFromJsonAsync<Gerardr_Projet_NoSql.Shared.Models.Products>($"api/products/{search}");
             if (res.Name != null)
             {
                 prod = res;

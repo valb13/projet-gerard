@@ -1,5 +1,5 @@
 ﻿using Gerardr_Projet_NoSql.DataAccessLayer;
-using Gerardr_Projet_NoSql.Models;
+using Gerardr_Projet_NoSql.Shared.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;

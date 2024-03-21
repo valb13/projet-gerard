@@ -1,6 +1,6 @@
 ﻿using DevExpress.Blazor.Base;
 using Gerardr_Projet_NoSql.Interface;
-using Gerardr_Projet_NoSql.Models;
+using Gerardr_Projet_NoSql.Shared.Models;
 using MongoDB.Driver;
 using NRedisStack;
 using NRedisStack.RedisStackCommands;
@@ -124,20 +124,27 @@ namespace Gerardr_Projet_NoSql.DataAccessLayer
         public void AddProductsRedis(Products prod)
         {
             //ajouter un produit à la base redis 
-            var hash = new HashEntry[] {
-            new HashEntry("name", prod.Name),
-            new HashEntry("description", prod.Description),
-            new HashEntry("prix", prod.Price.ToString()),
-            new HashEntry("stock", prod.Stock.ToString()),
-            };
+            try
+            {
+                var hash = new HashEntry[] {
+                new HashEntry("name", prod.Name),
+                new HashEntry("description", prod.Description),
+                new HashEntry("prix", prod.Price.ToString()),
+                new HashEntry("stock", prod.Stock.ToString()),
+                };
 
-            redisDatabase.HashSet(prod.Name, hash);
-            redisDatabase.KeyExpire(prod.Name, DateTime.Now.AddHours(1));
-            
+                redisDatabase.HashSet(prod.Name, hash);
+                redisDatabase.KeyExpire(prod.Name, DateTime.Now.AddHours(1));
 
-            var hashFields = redisDatabase.HashGetAll(prod.Name);
-            Console.WriteLine("redis get");
-            Console.WriteLine(String.Join("; ", hashFields));
+
+                var hashFields = redisDatabase.HashGetAll(prod.Name);
+                Console.WriteLine("redis get");
+                Console.WriteLine(String.Join("; ", hashFields));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
         public List<string> GetSacnProductsRedis(string id)
